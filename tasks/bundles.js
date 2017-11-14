@@ -22,6 +22,12 @@ const configurePlugins = (opts = {}) => {
     new webpack.NamedChunksPlugin((chunk) => chunk.name ? chunk.name :
         md5(chunk.mapModules((m) => m.identifier()).join()).slice(0, 10)),
 
+    // Extract momentjs to its own bundle
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'moment',
+      minChunks: Infinity,
+    }),
+
     // Extract runtime code so updates don't affect app-code caching:
     // https://webpack.js.org/guides/caching/
     new webpack.optimize.CommonsChunkPlugin({
@@ -89,6 +95,7 @@ const baseConfig = {
 const modernConfig = Object.assign({}, baseConfig, {
   entry: {
     'main': './app/scripts/main.js',
+    'moment': 'moment',
   },
   plugins: configurePlugins({runtimeName: 'runtime'}),
   module: {
@@ -109,6 +116,7 @@ const modernConfig = Object.assign({}, baseConfig, {
 const legacyConfig = Object.assign({}, baseConfig, {
   entry: {
     'main-legacy': './app/scripts/main-legacy.js',
+    'moment': 'moment',
   },
   plugins: configurePlugins({runtimeName: 'runtime-legacy'}),
   module: {
